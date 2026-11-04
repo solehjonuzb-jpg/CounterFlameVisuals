@@ -1,61 +1,83 @@
+
 package com.counterflame.visuals
 
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
-import android.os.Bundle
-import android.provider.Settings
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
+import android.os.Bundle
+import android.provider.Settings
 import android.view.Gravity
-import android.widget.*
 import android.view.View
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
 
 class MainActivity : Activity() {
 
     private lateinit var powerButton: TextView
+    private lateinit var statusText: TextView
+
     private var enabled = false
     private var waitingPermission = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         window.statusBarColor = Color.rgb(12, 5, 25)
         window.navigationBarColor = Color.rgb(12, 5, 25)
+
         createScreen()
     }
 
     private fun createScreen() {
+
         val root = FrameLayout(this)
-        root.setBackgroundColor(Color.rgb(12, 5, 25))
+        root.setBackgroundColor(Color.rgb(18, 8, 35))
 
         val backgroundImage = ImageView(this).apply {
             scaleType = ImageView.ScaleType.CENTER_CROP
-            val id = resources.getIdentifier(
-                "app_background", "drawable", packageName
+
+            val imageId = resources.getIdentifier(
+                "app_background",
+                "drawable",
+                packageName
             )
-            if (id != 0) setImageResource(id)
+
+            if (imageId != 0) {
+                setImageResource(imageId)
+            }
         }
-        root.addView(backgroundImage,
-            FrameLayout.LayoutParams(-1, -1))
+
+        root.addView(
+            backgroundImage,
+            FrameLayout.LayoutParams(-1, -1)
+        )
 
         val shade = View(this).apply {
             background = GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM,
                 intArrayOf(
-                    0xBB100020.toInt(),
-                    0x99100025.toInt(),
-                    0xEE08000F.toInt()
+                    0xBB0C0519.toInt(),
+                    0x990C0519.toInt(),
+                    0xEE0C0519.toInt()
                 )
             )
         }
-        root.addView(shade,
-            FrameLayout.LayoutParams(-1, -1))
+
+        root.addView(
+            shade,
+            FrameLayout.LayoutParams(-1, -1)
+        )
 
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
-            setPadding(28, 30, 28, 30)
+            setPadding(dp(28), dp(30), dp(28), dp(30))
         }
 
         val logo = TextView(this).apply {
@@ -64,7 +86,7 @@ class MainActivity : Activity() {
             typeface = Typeface.DEFAULT_BOLD
             gravity = Gravity.CENTER
             setTextColor(Color.WHITE)
-            setShadowLayer(30f, 0f, 0f, 0xFF9D25FF.toInt())
+            setShadowLayer(30f, 0f, 0f, 0xFFB82CFF.toInt())
         }
 
         val title = TextView(this).apply {
@@ -76,124 +98,198 @@ class MainActivity : Activity() {
         }
 
         val subtitle = TextView(this).apply {
-            text = "VISUALS"
-            textSize = 22f
+            text = "VISUALS COMPANION"
+            textSize = 14f
             typeface = Typeface.DEFAULT_BOLD
             gravity = Gravity.CENTER
-            setTextColor(0xFFD58AFF.toInt())
+            setTextColor(0xFFFF85D5.toInt())
         }
 
         powerButton = TextView(this).apply {
-            text = "⏻"
-            textSize = 48f
+            text = "START"
+            textSize = 18f
+            typeface = Typeface.DEFAULT_BOLD
             gravity = Gravity.CENTER
             setTextColor(Color.WHITE)
             background = powerBackground(false)
-            elevation = 18f
-            setOnClickListener { togglePower() }
+            elevation = dp(8).toFloat()
+
+            setOnClickListener {
+                togglePower()
+            }
         }
 
-        val status = TextView(this).apply {
-            tag = "status"
+        statusText = TextView(this).apply {
             text = "VISUALS: OFF"
-            textSize = 17f
+            textSize = 15f
+            typeface = Typeface.DEFAULT_BOLD
             gravity = Gravity.CENTER
             setTextColor(Color.WHITE)
         }
 
-        content.addView(logo)
-        content.addView(title)
-        content.addView(subtitle)
+        content.addView(
+            logo,
+            LinearLayout.LayoutParams(-1, dp(100))
+        )
 
-        val space = android.widget.Space(this)
-        content.addView(space,
-            LinearLayout.LayoutParams(1, 65))
+        content.addView(
+            title,
+            LinearLayout.LayoutParams(-1, dp(50))
+        )
 
-        content.addView(powerButton,
-            LinearLayout.LayoutParams(170, 170))
+        content.addView(
+            subtitle,
+            LinearLayout.LayoutParams(-1, dp(40))
+        )
 
-        val statusSpace = android.widget.Space(this)
-        content.addView(statusSpace,
-            LinearLayout.LayoutParams(1, 20))
+        val space = View(this)
 
-        content.addView(status)
+        content.addView(
+            space,
+            LinearLayout.LayoutParams(1, dp(65))
+        )
 
-        root.addView(content,
-            FrameLayout.LayoutParams(-1, -1))
+        content.addView(
+            powerButton,
+            LinearLayout.LayoutParams(-1, dp(58))
+        )
+
+        val statusSpace = View(this)
+
+        content.addView(
+            statusSpace,
+            LinearLayout.LayoutParams(1, dp(20))
+        )
+
+        content.addView(
+            statusText,
+            LinearLayout.LayoutParams(-1, dp(40))
+        )
+
+        root.addView(
+            content,
+            FrameLayout.LayoutParams(-1, -1)
+        )
 
         setContentView(root)
+
         updatePower(false)
     }
 
     private fun powerBackground(on: Boolean): GradientDrawable {
         return GradientDrawable().apply {
-            shape = GradientDrawable.OVAL
-            setColor(if (on) 0xFF8500FF.toInt()
-                     else 0xFF1B1030.toInt())
-            setStroke(4, if (on) 0xFFE4B0FF.toInt()
-                         else 0xFF8B35D8.toInt())
+            shape = GradientDrawable.RECTANGLE
+
+            orientation = GradientDrawable.Orientation.LEFT_RIGHT
+
+            colors = if (on) {
+                intArrayOf(
+                    0xFFED3AAB.toInt(),
+                    0xFF8A36FF.toInt()
+                )
+            } else {
+                intArrayOf(
+                    0xFF8A36FF.toInt(),
+                    0xFFED3AAB.toInt()
+                )
+            }
+
+            cornerRadius = dp(18).toFloat()
         }
     }
 
     private fun togglePower() {
+
         if (enabled) {
-            stopService(Intent(this, OverlayService::class.java))
+            stopService(
+                Intent(this, OverlayService::class.java)
+            )
+
             updatePower(false)
             return
         }
 
         if (!Settings.canDrawOverlays(this)) {
+
             waitingPermission = true
+
             val intent = Intent(
                 Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                 Uri.parse("package:$packageName")
             )
+
             startActivity(intent)
+
+            Toast.makeText(
+                this,
+                "Allow display over other apps",
+                Toast.LENGTH_LONG
+            ).show()
+
             return
         }
 
-        startService()
+        startOverlayService()
     }
 
-    private fun startService() {
-        val intent = Intent(this, OverlayService::class.java)
-        startForegroundService(intent)
-        updatePower(true)
+    private fun startOverlayService() {
+
+        try {
+            val intent = Intent(
+                this,
+                OverlayService::class.java
+            )
+
+            startForegroundService(intent)
+
+            updatePower(true)
+
+        } catch (e: Exception) {
+
+            updatePower(false)
+
+            Toast.makeText(
+                this,
+                "Service error: ${e.message}",
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 
     private fun updatePower(on: Boolean) {
+
         enabled = on
+
         powerButton.background = powerBackground(on)
-        powerButton.setTextColor(Color.WHITE)
 
-        val status = findViewById<TextView>(
-            android.R.id.content
-        )
-        val label = findStatusView()
-        label?.text = if (on) "VISUALS: ON" else "VISUALS: OFF"
-    }
-
-    private fun findStatusView(): TextView? {
-        fun search(view: View): TextView? {
-            if (view is TextView && view.tag == "status") return view
-            if (view is android.view.ViewGroup) {
-                for (i in 0 until view.childCount) {
-                    val result = search(view.getChildAt(i))
-                    if (result != null) return result
-                }
-            }
-            return null
+        powerButton.text = if (on) {
+            "STOP"
+        } else {
+            "START"
         }
-        return search(window.decorView)
+
+        statusText.text = if (on) {
+            "VISUALS: ON"
+        } else {
+            "VISUALS: OFF"
+        }
     }
 
     override fun onResume() {
         super.onResume()
+
         if (waitingPermission) {
+
             waitingPermission = false
+
             if (Settings.canDrawOverlays(this)) {
-                startService()
+                startOverlayService()
             }
         }
     }
+
+    private fun dp(value: Int): Int {
+        return (value * resources.displayMetrics.density).toInt()
+    }
 }
+
