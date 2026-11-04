@@ -41,5 +41,4 @@ jobs:
           name: CounterFlame-Visuals-APK
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
-0
 
